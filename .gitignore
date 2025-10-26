@@ -1,0 +1,34 @@
+# Compiled Object files
+*.o
+*.obj
+
+# Executables
+*.exe
+*.out
+*.app
+build/hospital_system
+build/hospital_system.exe
+
+# IDE specific files
+.vscode/
+.vs/
+*.sln
+*.vcxproj
+*.vcxproj.filters
+
+# Backup files
+*~
+*.bak
+*.swp
+*.tmp
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Keep build directory but ignore contents
+build/*
+!build/.gitkeep
+
+# Log files
+*.log
