@@ -25,20 +25,19 @@ int main()
             switch (roleChoice)
             {
             case 1:
-                std::cout << "\n[Patient Admission Clerk] - dummy logic here.\n";
+                std::cout << "\n----LOGIC HERE.----\n";
                 break;
             case 2:
-                std::cout << "\n[Medical Supply Manager] - dummy logic here.\n";
+                std::cout << "\n---LOGIC HERE.----\n";
                 break;
             case 3:
             {
-                std::cout << "\n[Emergency Department Officer] - launching module...\n";
                 EmergencyDepartment emergencyDept("./data/emergency_cases.txt");
                 emergencyDept.run();
                 break;
             }
             case 4:
-                std::cout << "\n[Ambulance Dispatcher] - dummy logic here.\n";
+                std::cout << "\n---LOGIC HERE.----\n";
                 break;
             case 5:
                 std::cout << "\nExiting system. Thank you!\n";

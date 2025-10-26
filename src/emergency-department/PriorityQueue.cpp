@@ -172,20 +172,23 @@ void PriorityQueue::displayAll() const
               << std::setw(20) << "Timestamp" << std::endl;
     std::cout << std::string(100, '-') << std::endl;
 
-    // Create a copy to maintain heap structure
-    EmergencyCase *tempHeap = new EmergencyCase[size];
+    // Create a temporary priority queue to extract in order
+    PriorityQueue *tempQueue = new PriorityQueue(capacity);
+
+    // Copy all cases to temp queue
     for (int i = 0; i < size; i++)
     {
-        tempHeap[i] = heap[i];
+        tempQueue->insert(heap[i]);
     }
 
-    // Display in priority order
-    for (int i = 0; i < size; i++)
+    // Extract and display in priority order
+    while (!tempQueue->isEmpty())
     {
-        tempHeap[i].display();
+        EmergencyCase case_ = tempQueue->extractMin();
+        case_.display();
     }
 
-    delete[] tempHeap;
+    delete tempQueue;
     std::cout << std::string(100, '=') << std::endl;
     std::cout << "Total pending cases: " << size << std::endl;
 }

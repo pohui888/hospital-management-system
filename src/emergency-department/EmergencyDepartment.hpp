@@ -23,10 +23,10 @@ public:
     EmergencyDepartment(const std::string &filePath = "../../data/emergency_cases.txt");
     ~EmergencyDepartment();
 
-    // Core functionalities (as per assignment)
-    void logEmergencyCase();          // Functionality 1
-    void processMostCriticalCase();   // Functionality 2
-    void viewPendingEmergencyCases(); // Functionality 3
+    // Core functionalities
+    void logEmergencyCase();
+    void processMostCriticalCase();
+    void viewPendingEmergencyCases();
 
     // Menu system
     void displayMenu();

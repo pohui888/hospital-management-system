@@ -1,6 +1,1 @@
 PatientID,Name,Age,Condition,AdmissionDate
-P0001,Ahmad Hassan,45,Cardiac Issues,2024-03-15
-P0002,Siti Nurhaliza,32,Bleeding,2024-03-15
-P0003,Kumar Selvam,28,Injury,2024-03-15
-P0004,Lee Mei Ling,55,Fracture,2024-03-15
-P0005,Fatimah Abdullah,38,Trauma,2024-03-15

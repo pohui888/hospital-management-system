@@ -38,7 +38,7 @@ public:
     // Display all cases
     void displayAll() const;
 
-    // Get all cases as array (for file operations)
+    // Get all cases as array
     EmergencyCase *getAllCases() const;
 };
 
