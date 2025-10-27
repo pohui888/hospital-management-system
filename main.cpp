@@ -1,4 +1,5 @@
 #include "src/emergency-department/EmergencyDepartment.hpp"
+#include "src/ambulance-dispatcher/AmbulanceDispatcher.hpp"
 #include <iostream>
 
 int main()
@@ -37,8 +38,11 @@ int main()
                 break;
             }
             case 4:
-                std::cout << "\n---LOGIC HERE.----\n";
+            {
+                AmbulanceDispatcher ambulanceDispatcher("./data/ambulances.txt");
+                ambulanceDispatcher.run();
                 break;
+            }
             case 5:
                 std::cout << "\nExiting system. Thank you!\n";
                 break;
