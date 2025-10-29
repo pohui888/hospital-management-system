@@ -28,7 +28,9 @@ int main()
             switch (roleChoice)
             {
             case 1:
-                    try {
+                break;
+            case 2:
+                try {
                         MedicalSupplyMenuHandler menu;
                         
                         menu.run();
@@ -38,9 +40,6 @@ int main()
                         cerr << "Exception: " << e.what() << endl;
                         return 1;
                     }
-                break;
-            case 2:
-                std::cout << "\n---LOGIC HERE.----\n";
                 break;
             case 3:
             {
