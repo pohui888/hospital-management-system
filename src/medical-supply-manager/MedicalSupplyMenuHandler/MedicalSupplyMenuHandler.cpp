@@ -4,21 +4,21 @@
 
 using namespace std;
 
-MenuHandler::MenuHandler() {
+MedicalSupplyMenuHandler::MedicalSupplyMenuHandler() {
     manager = new SupplyManager();
     isRunning = true;
 }
 
-MenuHandler::MenuHandler(const string& filename) {
+MedicalSupplyMenuHandler::MedicalSupplyMenuHandler(const string& filename) {
     manager = new SupplyManager(filename);
     isRunning = true;
 }
 
-MenuHandler::~MenuHandler() {
+MedicalSupplyMenuHandler::~MedicalSupplyMenuHandler() {
     delete manager;
 }
 
-void MenuHandler::displayWelcomeBanner() {
+void MedicalSupplyMenuHandler::displayWelcomeBanner() {
     Utils::clearScreen();
     cout << "\n";
     Utils::displaySeparator('*', 80);
@@ -33,7 +33,7 @@ void MenuHandler::displayWelcomeBanner() {
     Utils::pauseScreen();
 }
 
-void MenuHandler::displayMainMenu() {
+void MedicalSupplyMenuHandler::displayMainMenu() {
     Utils::clearScreen();
     Utils::displaySeparator('=', 80);
     cout << "||" << string(25, ' ') << "MEDICAL SUPPLY MANAGEMENT MENU" << string(23, ' ') << "||" << endl;
@@ -66,7 +66,7 @@ void MenuHandler::displayMainMenu() {
     cout << endl;
 }
 
-void MenuHandler::displayExitMessage() {
+void MedicalSupplyMenuHandler::displayExitMessage() {
     Utils::clearScreen();
     cout << "\n";
     Utils::displaySeparator('*', 80);
@@ -88,7 +88,7 @@ void MenuHandler::displayExitMessage() {
     cout << "\n";
 }
 
-void MenuHandler::processChoice(int choice) {
+void MedicalSupplyMenuHandler::processChoice(int choice) {
     switch (choice) {
         case 1:
             // Functionality 1: Add Supply Stock
@@ -122,7 +122,7 @@ void MenuHandler::processChoice(int choice) {
     }
 }
 
-void MenuHandler::run() {
+void MedicalSupplyMenuHandler::run() {
     // Display welcome banner
     displayWelcomeBanner();
     
