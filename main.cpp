@@ -1,4 +1,5 @@
 #include "src/emergency-department/EmergencyDepartment.hpp"
+#include "src/patient-admission/PatientFunction.hpp"
 #include <iostream>
 
 int main()
@@ -24,9 +25,11 @@ int main()
 
             switch (roleChoice)
             {
-            case 1:
-                std::cout << "\n----LOGIC HERE.----\n";
+            case 1:{
+                PatientFunction admission("./data/patient.txt");  // path to your patient file
+                admission.run();  // show the patient admission menu
                 break;
+                }
             case 2:
                 std::cout << "\n---LOGIC HERE.----\n";
                 break;
