@@ -11,12 +11,13 @@ private:
     std::string emergencyType;
     int priorityLevel; // 1 = Critical, 5 = Non-urgent
     std::string timestamp;
+    std::string status; // "Pending" or "Completed"
 
 public:
     // Constructors
     EmergencyCase();
     EmergencyCase(std::string id, std::string name, std::string type,
-                  int priority, std::string time);
+                  int priority, std::string time, std::string stat = "Pending");
 
     // Getters
     std::string getCaseID() const;
@@ -24,6 +25,7 @@ public:
     std::string getEmergencyType() const;
     int getPriorityLevel() const;
     std::string getTimestamp() const;
+    std::string getStatus() const;
 
     // Setters
     void setCaseID(const std::string &id);
@@ -31,6 +33,7 @@ public:
     void setEmergencyType(const std::string &type);
     void setPriorityLevel(int priority);
     void setTimestamp(const std::string &time);
+    void setStatus(const std::string &stat);
 
     // Comparison operator for priority queue
     bool operator<(const EmergencyCase &other) const;

@@ -17,10 +17,10 @@ int main()
             std::cout << "║    HOSPITAL PATIENT CARE MANAGEMENT SYSTEM                 ║\n";
             std::cout << "╚════════════════════════════════════════════════════════════╝\n\n";
             std::cout << "Select your role:\n";
-            std::cout << "  1. PATIENT ADMISSION CLERK\n";
-            std::cout << "  2. MEDICAL SUPPLY MANAGER\n";
-            std::cout << "  3. EMERGENCY DEPARTMENT OFFICER\n";
-            std::cout << "  4. AMBULANCE DISPATCHER\n";
+            std::cout << "  1. Patient Admission Clerk\n";
+            std::cout << "  2. Medical Supply Manager\n";
+            std::cout << "  3. Emergency Department Officer\n";
+            std::cout << "  4. Ambulance Dispatcher\n";
             std::cout << "  5. Exit\n";
             std::cout << "Enter choice (1-5): ";
             std::cin >> roleChoice;
@@ -30,16 +30,18 @@ int main()
             case 1:
                 break;
             case 2:
-                try {
-                        MedicalSupplyMenuHandler menu;
-                        
-                        menu.run();
-                        
-                    } catch (const exception& e) {
-                        Utils::displayError("Fatal error occurred!");
-                        cerr << "Exception: " << e.what() << endl;
-                        return 1;
-                    }
+                try
+                {
+                    MedicalSupplyMenuHandler menu;
+
+                    menu.run();
+                }
+                catch (const exception &e)
+                {
+                    Utils::displayError("Fatal error occurred!");
+                    cerr << "Exception: " << e.what() << endl;
+                    return 1;
+                }
                 break;
             case 3:
             {
