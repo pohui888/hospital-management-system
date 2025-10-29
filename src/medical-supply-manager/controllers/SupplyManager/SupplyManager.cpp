@@ -269,7 +269,7 @@ void SupplyManager::displayStatistics() const
 
     cout << "\n";
     cout << left << setw(30) << "Total Supplies in Stock:" << stack->getSize() << endl;
-    cout << left << setw(30) << "Next Supply ID:" << "SUP" << setfill('0') << setw(3) << nextSupplyIDNumber << endl;
+    cout << left << setw(30) << "Next Supply ID:" << "SUP" << setfill('0') << setw(3) << nextSupplyIDNumber << setfill(' ') << endl;
     cout << left << setw(30) << "Data File:" << fileHandler->getFilename() << endl;
     cout << left << setw(30) << "Stack Status:" << (stack->isEmpty() ? "Empty" : "Contains Data") << endl;
 
