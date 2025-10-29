@@ -1,9 +1,9 @@
-CaseID,PatientName,EmergencyType,PriorityLevel,Timestamp
-EC0001,Yong Liang,Cardiac Arrest,1,2025-10-27 14:30:01
-EC0005,Jian Kiat,Severe Trauma,1,22025-10-27 14:30:02
-EC0007,Po Hui,Stroke,1,2025-10-27 14:30:03
-EC0008,CK,Severe Burns,2,2025-10-27 14:30:04
-EC0002,Xiao Hu Li,Severe Bleeding,2,2025-10-27 14:30:05
-EC0006,La Bi Xiao Xin,High Fever,3,2025-10-27 14:30:06
-EC0003,On Punch Man,Moderate Injury,3,2025-10-27 14:30:07
-EC0004,Bodoh,Minor Fracture,4,2025-10-27 14:30:08
+CaseID,PatientName,EmergencyType,PriorityLevel,Status,Timestamp
+EC0003,Kumar Selvam,Moderate Injury,3,Pending,2024-03-15 14:40:00
+EC0004,Lee Mei Ling,Minor Fracture,4,Pending,2024-03-15 14:45:00
+EC0006,Rajesh Kumar,High Fever,3,Pending,2024-03-15 14:55:00
+EC0005,Fatimah Abdullah,Severe Trauma,1,Pending,2024-03-15 14:50:00
+EC0002,Siti Nurhaliza,Severe Bleeding,2,Pending,2024-03-15 14:35:00
+EC0007,Chen Wei,Stroke,1,Pending,2024-03-15 15:00:00
+EC0008,Aisha Mohamed,Severe Burns,2,Pending,2024-03-15 15:05:00
+EC0001,Ahmad Hassan,Cardiac Arrest,1,Pending,2024-03-15 14:30:00

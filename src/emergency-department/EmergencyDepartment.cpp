@@ -67,12 +67,13 @@ void EmergencyDepartment::loadFromFile()
             continue;
 
         std::stringstream ss(line);
-        std::string caseID, name, type, priorityStr, timestamp;
+        std::string caseID, name, type, priorityStr, status, timestamp;
 
         std::getline(ss, caseID, ',');
         std::getline(ss, name, ',');
         std::getline(ss, type, ',');
         std::getline(ss, priorityStr, ',');
+        std::getline(ss, status, ',');
         std::getline(ss, timestamp);
 
         // Trim whitespace
@@ -80,12 +81,13 @@ void EmergencyDepartment::loadFromFile()
         name = trim(name);
         type = trim(type);
         priorityStr = trim(priorityStr);
+        status = trim(status);
         timestamp = trim(timestamp);
 
         if (!caseID.empty() && !name.empty())
         {
             int priority = std::stoi(priorityStr);
-            EmergencyCase emergencyCase(caseID, name, type, priority, timestamp);
+            EmergencyCase emergencyCase(caseID, name, type, priority, timestamp, status);
             emergencyQueue->insert(emergencyCase);
 
             // Update case number counter
@@ -115,7 +117,7 @@ void EmergencyDepartment::saveToFile()
     }
 
     // Write header
-    file << "CaseID,PatientName,EmergencyType,PriorityLevel,Timestamp\n";
+    file << "CaseID,PatientName,EmergencyType,PriorityLevel,Status,Timestamp\n";
 
     // Write all cases
     int size = emergencyQueue->getSize();
@@ -172,7 +174,7 @@ void EmergencyDepartment::logEmergencyCase()
     std::string caseID = generateCaseID();
     std::string timestamp = getCurrentTimestamp();
 
-    EmergencyCase newCase(caseID, name, type, priority, timestamp);
+    EmergencyCase newCase(caseID, name, type, priority, timestamp, "Pending");
     emergencyQueue->insert(newCase);
 
     std::cout << "\n"
@@ -180,6 +182,7 @@ void EmergencyDepartment::logEmergencyCase()
     std::cout << "Emergency case logged successfully!\n";
     std::cout << "Case ID: " << caseID << std::endl;
     std::cout << "Priority: " << priority << std::endl;
+    std::cout << "Status: Pending\n";
     std::cout << std::string(60, '=') << std::endl;
 
     saveToFile();
@@ -193,7 +196,7 @@ void EmergencyDepartment::processMostCriticalCase()
     std::cout << "PROCESS MOST CRITICAL CASE\n";
     std::cout << std::string(60, '=') << std::endl;
 
-    if (emergencyQueue->isEmpty())
+    if (emergencyQueue->getPendingCount() == 0)
     {
         std::cout << "No pending emergency cases to process.\n";
         std::cout << std::string(60, '=') << std::endl;
@@ -202,18 +205,31 @@ void EmergencyDepartment::processMostCriticalCase()
 
     try
     {
-        EmergencyCase criticalCase = emergencyQueue->extractMin();
+        EmergencyCase *criticalCase = emergencyQueue->findMostCriticalPending();
+
+        if (criticalCase == nullptr)
+        {
+            std::cout << "No pending emergency cases to process.\n";
+            std::cout << std::string(60, '=') << std::endl;
+            return;
+        }
 
         std::cout << "\nProcessing the following case:\n";
         std::cout << std::string(60, '-') << std::endl;
-        std::cout << "Case ID       : " << criticalCase.getCaseID() << std::endl;
-        std::cout << "Patient Name  : " << criticalCase.getPatientName() << std::endl;
-        std::cout << "Emergency Type: " << criticalCase.getEmergencyType() << std::endl;
-        std::cout << "Priority Level: " << criticalCase.getPriorityLevel() << std::endl;
-        std::cout << "Logged Time   : " << criticalCase.getTimestamp() << std::endl;
+        std::cout << "Case ID       : " << criticalCase->getCaseID() << std::endl;
+        std::cout << "Patient Name  : " << criticalCase->getPatientName() << std::endl;
+        std::cout << "Emergency Type: " << criticalCase->getEmergencyType() << std::endl;
+        std::cout << "Priority Level: " << criticalCase->getPriorityLevel() << std::endl;
+        std::cout << "Logged Time   : " << criticalCase->getTimestamp() << std::endl;
+        std::cout << "Previous Status: " << criticalCase->getStatus() << std::endl;
         std::cout << std::string(60, '-') << std::endl;
-        std::cout << "\nCase has been attended to and removed from queue.\n";
-        std::cout << "Remaining cases: " << emergencyQueue->getSize() << std::endl;
+
+        // Mark as completed instead of deleting
+        emergencyQueue->markAsCompleted(criticalCase->getCaseID());
+
+        std::cout << "\nCase has been attended to and marked as COMPLETED.\n";
+        std::cout << "Remaining pending cases: " << emergencyQueue->getPendingCount() << std::endl;
+        std::cout << "Total completed cases: " << emergencyQueue->getCompletedCount() << std::endl;
         std::cout << std::string(60, '=') << std::endl;
 
         saveToFile();
