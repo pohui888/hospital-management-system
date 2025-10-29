@@ -1,8 +1,8 @@
 #ifndef SUPPLYMANAGER_HPP
 #define SUPPLYMANAGER_HPP
 
-#include "../models/SupplyStack/SupplyStack.hpp"
-#include "../FileHandler/FileHandler.hpp"
+#include "../../models/SupplyStack/SupplyStack.hpp"
+#include "../../FileHandler/FileHandler.hpp"
 #include <string>
 
 using namespace std;
