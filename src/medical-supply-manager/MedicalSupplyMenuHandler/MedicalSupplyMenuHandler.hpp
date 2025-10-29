@@ -3,7 +3,7 @@
 
 #include "../controllers/SupplyManager/SupplyManager.hpp"
 
-class MenuHandler {
+class MedicalSupplyMenuHandler {
 private:
     SupplyManager* manager;
     bool isRunning;
@@ -19,13 +19,13 @@ private:
 
 public:
     // Constructor
-    MenuHandler();
+    MedicalSupplyMenuHandler();
     
     // Constructor with custom filename
-    MenuHandler(const string& filename);
+    MedicalSupplyMenuHandler(const string& filename);
     
     // Destructor
-    ~MenuHandler();
+    ~MedicalSupplyMenuHandler();
     
     // Run the main application loop
     void run();

@@ -29,7 +29,7 @@ int main()
             {
             case 1:
                     try {
-                        MenuHandler menu;
+                        MedicalSupplyMenuHandler menu;
                         
                         menu.run();
                         
