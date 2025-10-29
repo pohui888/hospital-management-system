@@ -1,5 +1,7 @@
 #include "src/emergency-department/EmergencyDepartment.hpp"
 #include "src/ambulance-dispatcher/AmbulanceDispatcher.hpp"
+#include "src/medical-supply-manager/MedicalSupplyMenuHandler/MedicalSupplyMenuHandler.hpp"
+#include "src/medical-supply-manager/utils/utils.hpp"
 #include <iostream>
 
 int main()
@@ -26,7 +28,16 @@ int main()
             switch (roleChoice)
             {
             case 1:
-                std::cout << "\n----LOGIC HERE.----\n";
+                    try {
+                        MenuHandler menu;
+                        
+                        menu.run();
+                        
+                    } catch (const exception& e) {
+                        Utils::displayError("Fatal error occurred!");
+                        cerr << "Exception: " << e.what() << endl;
+                        return 1;
+                    }
                 break;
             case 2:
                 std::cout << "\n---LOGIC HERE.----\n";
