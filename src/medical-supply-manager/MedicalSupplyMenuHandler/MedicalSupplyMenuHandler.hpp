@@ -1,7 +1,7 @@
 #ifndef MENUHANDLER_HPP
 #define MENUHANDLER_HPP
 
-#include "SupplyManager.hpp"
+#include "../controllers/SupplyManager/SupplyManager.hpp"
 
 class MenuHandler {
 private:
