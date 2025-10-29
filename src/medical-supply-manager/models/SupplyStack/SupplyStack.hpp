@@ -1,7 +1,7 @@
 #ifndef SUPPLYSTACK_HPP
 #define SUPPLYSTACK_HPP
 
-#include "Supply.hpp"
+#include "../Supply/Supply.hpp"
 
 class SupplyStack {
 private:
