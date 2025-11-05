@@ -1,4 +1,5 @@
 #include "src/emergency-department/EmergencyDepartment.hpp"
+#include "src/patient-admission/PatientFunction.hpp"
 #include "src/ambulance-dispatcher/AmbulanceDispatcher.hpp"
 #include "src/medical-supply-manager/MedicalSupplyMenuHandler/MedicalSupplyMenuHandler.hpp"
 #include "src/medical-supply-manager/utils/utils.hpp"
@@ -27,8 +28,11 @@ int main()
 
             switch (roleChoice)
             {
-            case 1:
+            case 1:{
+                PatientFunction admission("./data/patient.txt");  // path to your patient file
+                admission.run();  // show the patient admission menu
                 break;
+                }
             case 2:
                 try
                 {
