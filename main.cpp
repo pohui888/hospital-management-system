@@ -30,16 +30,18 @@ int main()
             case 1:
                 break;
             case 2:
-                try {
-                        MedicalSupplyMenuHandler menu;
-                        
-                        menu.run();
-                        
-                    } catch (const exception& e) {
-                        Utils::displayError("Fatal error occurred!");
-                        cerr << "Exception: " << e.what() << endl;
-                        return 1;
-                    }
+                try
+                {
+                    MedicalSupplyMenuHandler menu;
+
+                    menu.run();
+                }
+                catch (const exception &e)
+                {
+                    Utils::displayError("Fatal error occurred!");
+                    cerr << "Exception: " << e.what() << endl;
+                    return 1;
+                }
                 break;
             case 3:
             {
@@ -49,7 +51,7 @@ int main()
             }
             case 4:
             {
-                AmbulanceDispatcher ambulanceDispatcher("./data/ambulances.txt");
+                AmbulanceDispatcher ambulanceDispatcher("./data/active_duty_ambulance.txt");
                 ambulanceDispatcher.run();
                 break;
             }
