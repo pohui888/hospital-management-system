@@ -18,10 +18,15 @@ public:
 
     string trim(const string &str);
     string formatAmbulanceID(int id);
-    void registerAmbulance(const Ambulance &a);
+    int getNextAmbulanceID();
+    int getDriverID(const string &driverName);
+    void addAmbulanceToInactive();
+    bool checkDriverExists(const string &driverName);
+    void removeDriverFromInactive(const string &driverName);
+    void registerAmbulance();
     void rotateShift();
     void displaySchedule() const;
-    void saveToFile(const string &filename) const;
+    void saveToFile() const;
     void loadFromFile(const string &filename);
     void run();
 };

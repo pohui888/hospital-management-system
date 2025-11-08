@@ -55,7 +55,7 @@ int main()
             }
             case 4:
             {
-                AmbulanceDispatcher ambulanceDispatcher("./data/ambulances.txt");
+                AmbulanceDispatcher ambulanceDispatcher("./data/active_duty_ambulance.txt");
                 ambulanceDispatcher.run();
                 break;
             }

@@ -6,10 +6,10 @@
 #include <iomanip>
 using namespace std;
 
-AmbulanceDispatcher::AmbulanceDispatcher() : ambulanceQueue(10) {}
+AmbulanceDispatcher::AmbulanceDispatcher() : ambulanceQueue(15) {}
 
 AmbulanceDispatcher::AmbulanceDispatcher(const string &filename)
-    : ambulanceQueue(10), dataFile(filename)
+    : ambulanceQueue(15), dataFile(filename)
 {
     loadFromFile(filename);
 }
@@ -30,6 +30,44 @@ string AmbulanceDispatcher::formatAmbulanceID(int id)
     return oss.str();
 }
 
+int AmbulanceDispatcher::getNextAmbulanceID()
+{
+    int maxID = 0;
+
+    // Check active ambulances
+    int size = ambulanceQueue.getSize();
+    Ambulance *arr = new Ambulance[size];
+    int actualSize = 0;
+    ambulanceQueue.getAllAmbulances(arr, actualSize);
+    for (int i = 0; i < actualSize; i++)
+        if (arr[i].getId() > maxID)
+            maxID = arr[i].getId();
+    delete[] arr;
+
+    // Check inactive file
+    ifstream file("data/inactive_duty_ambulance.txt");
+    if (file.is_open())
+    {
+        string line;
+        getline(file, line);
+        while (getline(file, line))
+        {
+            stringstream ss(line);
+            string idStr;
+            getline(ss, idStr, ',');
+            if (!idStr.empty())
+            {
+                int id = stoi(idStr);
+                if (id > maxID)
+                    maxID = id;
+            }
+        }
+        file.close();
+    }
+
+    return maxID + 1;
+}
+
 string getCurrentTime()
 {
     time_t now = time(nullptr);
@@ -38,17 +76,54 @@ string getCurrentTime()
     return string(buf);
 }
 
-void AmbulanceDispatcher::registerAmbulance(const Ambulance &ambulance)
+void AmbulanceDispatcher::addAmbulanceToInactive()
 {
     try
     {
-        Ambulance newAmbulance = ambulance;
-        newAmbulance.setTimeStamp(getCurrentTime());
-        ambulanceQueue.enqueue(newAmbulance);
-        cout << "Ambulance registered successfully.\n";
+        string driver;
+        int newId = getNextAmbulanceID();
+        string formatted = formatAmbulanceID(newId);
+        cout << "Generated Ambulance ID: " << formatted << "\n";
+        cout << "Enter Driver Name: ";
+        getline(cin, driver);
+        driver = trim(driver);
 
-        if (!dataFile.empty())
-            saveToFile(dataFile);
+        // Create new Ambulance object
+        Ambulance newAmbulance(newId, driver);
+        newAmbulance.setDutyStatus(false);
+        newAmbulance.setShiftMode("None");
+        newAmbulance.setWorkingHours(0.00);
+        newAmbulance.setTimeStamp(getCurrentTime());
+
+        string filePath = "data/inactive_duty_ambulance.txt";
+        bool newFile = false;
+
+        {
+            ifstream check(filePath);
+            if (!check.good() || check.peek() == ifstream::traits_type::eof())
+                newFile = true;
+        }
+
+        ofstream inactive(filePath, ios::app);
+        if (!inactive.is_open())
+        {
+            cerr << "Error: Unable to open inactive duty ambulance file!\n";
+            return;
+        }
+
+        if (newFile)
+        {
+            inactive << "AmbulanceID,DriverName,Status,ShiftMode,WorkingHours,TimeStamp\n";
+        }
+
+        inactive << newAmbulance.getId() << ","
+                 << newAmbulance.getDriverName() << ","
+                 << "OffDuty" << ","
+                 << newAmbulance.getShiftMode() << ","
+                 << newAmbulance.getWorkingHours() << ","
+                 << newAmbulance.getTimeStamp() << "\n";
+
+        cout << "Ambulance added to inactive duty file.\n";
     }
     catch (const exception &e)
     {
@@ -56,15 +131,156 @@ void AmbulanceDispatcher::registerAmbulance(const Ambulance &ambulance)
     }
 }
 
+bool AmbulanceDispatcher::checkDriverExists(const string &driverName)
+{
+    ifstream file("data/inactive_duty_ambulance.txt");
+    if (!file.is_open())
+        return false;
+
+    string line;
+    getline(file, line);
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        string id, name;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+        if (trim(name) == trim(driverName))
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+void AmbulanceDispatcher::removeDriverFromInactive(const string &driverName)
+{
+    string filePath = "data/inactive_duty_ambulance.txt";
+    string tempPath = "data/temp_inactive.txt";
+
+    ifstream inFile(filePath);
+    ofstream outFile(tempPath);
+
+    if (!inFile.is_open() || !outFile.is_open())
+    {
+        cerr << "Error: Unable to open inactive file for update.\n";
+        return;
+    }
+
+    string line;
+    bool isHeader = true;
+
+    while (getline(inFile, line))
+    {
+        if (isHeader)
+        {
+            outFile << line << "\n";
+            isHeader = false;
+            continue;
+        }
+
+        stringstream ss(line);
+        string id, name;
+        getline(ss, id, ',');
+        getline(ss, name, ',');
+
+        if (trim(name) != trim(driverName))
+        {
+            outFile << line << "\n";
+        }
+    }
+
+    inFile.close();
+    outFile.close();
+
+    remove(filePath.c_str());
+    rename(tempPath.c_str(), filePath.c_str());
+}
+
+// Helper: get driver ID from inactive file
+int AmbulanceDispatcher::getDriverID(const string &driverName)
+{
+    ifstream file("data/inactive_duty_ambulance.txt");
+    if (!file.is_open())
+        return -1;
+
+    string line;
+    getline(file, line);
+    while (getline(file, line))
+    {
+        stringstream ss(line);
+        string idStr, name;
+        getline(ss, idStr, ',');
+        getline(ss, name, ',');
+
+        if (trim(name) == trim(driverName))
+            return stoi(idStr);
+    }
+    return -1;
+}
+
+void AmbulanceDispatcher::registerAmbulance()
+{
+    try
+    {
+        string driver, shift, workingHours;
+
+        cout << "Enter Driver Name: ";
+        getline(cin, driver);
+        driver = trim(driver);
+
+        int driverID = getDriverID(driver);
+        if (driverID == -1)
+        {
+            cout << "Error: Driver not found in inactive list. Cannot register.\n";
+            return;
+        }
+
+        do
+        {
+            cout << "Enter Shift Mode (A/B/C): ";
+            getline(cin, shift);
+            shift = trim(shift);
+        } while (shift != "A" && shift != "B" && shift != "C");
+
+        // Create Ambulance object
+        Ambulance newAmbulance(driverID, driver);
+        newAmbulance.setDutyStatus(true);
+        newAmbulance.setShiftMode(shift);
+        newAmbulance.setWorkingHours(0.00);
+        newAmbulance.setTimeStamp(getCurrentTime());
+
+        ambulanceQueue.enqueue(newAmbulance);
+        cout << "Ambulance registered successfully.\n";
+
+        removeDriverFromInactive(driver);
+
+        if (!dataFile.empty())
+            saveToFile();
+    }
+    catch (const exception &e)
+    {
+        cerr << "Error: " << e.what() << "\n";
+    }
+}
+
 void AmbulanceDispatcher::rotateShift()
 {
     try
     {
+        cout << "\n================ BEFORE ROTATION ================\n";
+        ambulanceQueue.display();
+
+        cout << "\nRotating ambulance shifts...\n";
         ambulanceQueue.rotateDuty();
-        cout << "Ambulance shift rotated successfully.\n";
+
+        cout << "\n================ AFTER ROTATION =================\n";
+        ambulanceQueue.display();
+
+        cout << "\nAmbulance shift rotated successfully.\n";
 
         if (!dataFile.empty())
-            saveToFile(dataFile);
+            saveToFile();
     }
     catch (const exception &e)
     {
@@ -84,22 +300,26 @@ void AmbulanceDispatcher::loadFromFile(const string &filename)
         return;
 
     string line;
-    getline(file, line); // skip header
+    getline(file, line);
 
     while (getline(file, line))
     {
         stringstream ss(line);
-        string idStr, name, status, timestamp;
+        string idStr, name, status, shiftMode, workingHours, timestamp;
 
         getline(ss, idStr, ',');
         getline(ss, name, ',');
         getline(ss, status, ',');
+        getline(ss, shiftMode, ',');
+        getline(ss, workingHours, ',');
         getline(ss, timestamp, ',');
 
         if (!idStr.empty() && !name.empty())
         {
             Ambulance ambulance(stoi(idStr), name);
             ambulance.setDutyStatus(status == "OnDuty");
+            ambulance.setShiftMode(shiftMode);
+            ambulance.setWorkingHours(stof(workingHours));
             ambulance.setTimeStamp(timestamp);
             ambulanceQueue.enqueue(ambulance);
         }
@@ -108,16 +328,17 @@ void AmbulanceDispatcher::loadFromFile(const string &filename)
     file.close();
 }
 
-void AmbulanceDispatcher::saveToFile(const string &filename) const
+void AmbulanceDispatcher::saveToFile() const
 {
-    ofstream file(filename);
-    if (!file.is_open())
+    ofstream active("data/active_duty_ambulance.txt");
+
+    if (!active.is_open())
     {
-        cerr << "Error: Unable to save data to file!\n";
+        cerr << "Error: Unable to save data to files!\n";
         return;
     }
 
-    file << "AmbulanceID,DriverName,Status,TimeStamp\n";
+    active << "AmbulanceID,DriverName,Status,ShiftMode,WorkingHours,TimeStamp\n";
 
     int size = ambulanceQueue.getSize();
     Ambulance *ambulances = new Ambulance[size];
@@ -126,14 +347,18 @@ void AmbulanceDispatcher::saveToFile(const string &filename) const
 
     for (int i = 0; i < actualSize; i++)
     {
-        file << ambulances[i].getId() << ","
-             << ambulances[i].getDriverName() << ","
-             << (ambulances[i].getDutyStatus() ? "OnDuty" : "OffDuty") << ","
-             << ambulances[i].getTimeStamp() << "\n";
+        Ambulance &ambulance = ambulances[i];
+        active << fixed << setprecision(2)
+               << ambulance.getId() << ","
+               << ambulance.getDriverName() << ","
+               << (ambulance.getDutyStatus() ? "OnDuty" : "OffDuty") << ","
+               << ambulance.getShiftMode() << ","
+               << ambulance.getWorkingHours() << ","
+               << ambulance.getTimeStamp() << "\n";
     }
 
     delete[] ambulances;
-    file.close();
+    active.close();
 }
 
 void AmbulanceDispatcher::run()
@@ -145,10 +370,11 @@ void AmbulanceDispatcher::run()
         cout << "╔══════════════════════════════════════════════════════╗\n";
         cout << "║             AMBULANCE DISPATCHER MENU                ║\n";
         cout << "╚══════════════════════════════════════════════════════╝\n";
-        cout << "1. Register Ambulance\n";
-        cout << "2. Rotate Shift\n";
-        cout << "3. Display Schedule\n";
-        cout << "4. Exit to Main Menu\n";
+        cout << "1. Add New Ambulance to Inactive Duty\n";
+        cout << "2. Register Ambulance to Active Duty\n";
+        cout << "3. Rotate Shift\n";
+        cout << "4. Display Schedule\n";
+        cout << "5. Exit to Main Menu\n";
         cout << "Enter your choice: ";
         if (!(cin >> choice))
         {
@@ -162,27 +388,26 @@ void AmbulanceDispatcher::run()
         {
         case 1:
         {
-            string driver;
-            int newId = ambulanceQueue.getSize() + 1;
-            string formatted = formatAmbulanceID(newId);
-            cout << "Generated Ambulance ID: " << formatted << "\n";
-            cout << "Enter Driver Name: ";
-            getline(cin, driver);
-            registerAmbulance(Ambulance(newId, driver));
+            addAmbulanceToInactive();
             break;
         }
         case 2:
+        {
+            registerAmbulance();
+            break;
+        }
+        case 3:
             rotateShift();
             break;
-        case 3:
+        case 4:
             displaySchedule();
             break;
-        case 4:
-            saveToFile(dataFile);
+        case 5:
+            saveToFile();
             cout << "Returning to main menu...\n";
             break;
         default:
             cout << "Invalid option. Please try again.\n";
         }
-    } while (choice != 4);
+    } while (choice != 5);
 }
