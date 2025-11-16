@@ -19,6 +19,7 @@ public:
 
     bool isFull() const;
     bool isEmpty() const;
+    bool allCompletedHours() const;
     void enqueue(const Ambulance &a);
     void dequeue();
     void rotate();
