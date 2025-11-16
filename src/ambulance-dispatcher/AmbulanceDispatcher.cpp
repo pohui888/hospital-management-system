@@ -277,8 +277,6 @@ void AmbulanceDispatcher::rotateShift()
         cout << "\n================ AFTER ROTATION =================\n";
         ambulanceQueue.display();
 
-        cout << "\nAmbulance shift rotated successfully.\n";
-
         if (!dataFile.empty())
             saveToFile();
     }
@@ -403,8 +401,7 @@ void AmbulanceDispatcher::run()
             displaySchedule();
             break;
         case 5:
-            saveToFile();
-            cout << "Returning to main menu...\n";
+            cout << "Exiting to Main Menu...\n";
             break;
         default:
             cout << "Invalid option. Please try again.\n";

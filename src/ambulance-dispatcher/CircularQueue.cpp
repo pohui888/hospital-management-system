@@ -58,6 +58,20 @@ void CircularQueue::rotate()
     }
 }
 
+bool CircularQueue::allCompletedHours() const
+{
+    if (isEmpty())
+        return false;
+
+    for (int i = 0; i < count; i++)
+    {
+        int idx = (front + i) % capacity;
+        if (arr[idx].getWorkingHours() < 8.0f)
+            return false;
+    }
+    return true;
+}
+
 void CircularQueue::rotateDuty()
 {
     if (isEmpty())
@@ -66,10 +80,20 @@ void CircularQueue::rotateDuty()
         return;
     }
 
-    Ambulance current = arr[front];
+    // If all ambulances already hit their allocated hours, rotation locked
+    if (allCompletedHours())
+    {
+        cout << "All ambulances have completed their working hours. "
+             << "Rotation locked until next day.\n";
+        return;
+    }
+
+    // Current ambulance at front
+    int currentIndex = front;
+    Ambulance &current = arr[currentIndex];
     string shift = current.getShiftMode();
 
-    // Count ambulances in same shift
+    // Count how many ambulances are in this shift
     int shiftCount = 0;
     for (int i = 0; i < count; i++)
     {
@@ -84,58 +108,41 @@ void CircularQueue::rotateDuty()
         return;
     }
 
-    float hoursEach = 8.0f / shiftCount;
+    // Hours allocated per ambulance in this shift
+    float hoursPerAmbulance = 8.0f / shiftCount;
 
-    // Check if all in this shift have already reached 8 hours
-    bool allDone = true;
-    for (int i = 0; i < count; i++)
-    {
-        int idx = (front + i) % capacity;
-        if (arr[idx].getShiftMode() == shift && arr[idx].getWorkingHours() < 8.0f)
-        {
-            allDone = false;
-            break;
-        }
-    }
+    // ADD hours to current ambulance
+    float newHours = current.getWorkingHours() + hoursPerAmbulance;
+    current.setWorkingHours(newHours > hoursPerAmbulance ? hoursPerAmbulance : newHours);
 
-    if (allDone)
+    // Set current to OffDuty
+    current.setDutyStatus(false);
+
+    // CHECK NEXT AMBULANCE BEFORE ROTATING
+    int nextIndex = (front + 1) % capacity;
+    Ambulance &nextAmb = arr[nextIndex];
+
+    // If next ambulance has completed its allocated hours, STOP
+    if (nextAmb.getWorkingHours() >= hoursPerAmbulance)
     {
-        cout << "Cannot rotate — all ambulances in Shift " << shift << " have completed their 8-hour duty.\n";
+        cout << "Next ambulance (ID: " << nextAmb.getId()
+             << ") has completed its allocated working hours. Rotation stopped.\n";
         return;
     }
 
-    // Current front ambulance finishes its turn
-    current.setDutyStatus(false);
-    float newHours = current.getWorkingHours() + hoursEach;
-    current.setWorkingHours(newHours > 8.0f ? 8.0f : newHours);
-
-    // Move it to back of queue
+    // Move current to back
+    Ambulance finished = current;
     dequeue();
-    enqueue(current);
+    enqueue(finished);
 
-    // Find the next available same-shift ambulance with <8 hours
-    int nextIdx = -1;
-    for (int i = 0; i < count; i++)
-    {
-        int idx = (front + i) % capacity;
-        if (arr[idx].getShiftMode() == shift && arr[idx].getWorkingHours() < 8.0f)
-        {
-            nextIdx = idx;
-            break;
-        }
-    }
+    // Activate next ambulance
+    nextAmb.setDutyStatus(true);
 
-    if (nextIdx != -1)
-    {
-        arr[nextIdx].setDutyStatus(true);
-        cout << fixed << setprecision(2)
-             << "Ambulance " << arr[nextIdx].getId() << " (" << arr[nextIdx].getDriverName()
-             << ") is now OnDuty. Working Hours = " << arr[nextIdx].getWorkingHours() << "\n";
-    }
-    else
-    {
-        cout << "All ambulances in Shift " << shift << " have reached 8 working hours.\n";
-    }
+    cout << fixed << setprecision(2)
+         << "Ambulance " << nextAmb.getId() << " ("
+         << nextAmb.getDriverName()
+         << ") is now OnDuty. Working Hours = "
+         << nextAmb.getWorkingHours() << "\n";
 }
 
 void CircularQueue::clear()
