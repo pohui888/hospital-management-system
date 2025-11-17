@@ -7,15 +7,15 @@ bool Queue::isEmpty() const {
 }
 
 bool Queue::isFull() const {
-    return (rear + 1) % MAX_SIZE == front;
+    return rear == MAX_SIZE;
 }
 
 int Queue::size() const {
-    return (rear - front + MAX_SIZE) % MAX_SIZE;
+    return rear - front;
 }
 
 PatientAdmission& Queue::at(int index) {
-    return patients[(front + index) % MAX_SIZE];
+    return patients[front + index];
 }
 
 void Queue::enqueue(const PatientAdmission &p) {
@@ -24,52 +24,47 @@ void Queue::enqueue(const PatientAdmission &p) {
         return;
     }
     patients[rear] = p;
-    rear = (rear + 1) % MAX_SIZE;
+    rear++;
 }
 
 PatientAdmission Queue::dequeue() {
     if (isEmpty()) {
-        std::cout << "\nQueue empty! No admitted patients to remove.\n";
+        cout << "\nQueue empty! No admitted patients to remove.\n";
         return PatientAdmission();
     }
 
     int qSize = size();
     int targetIndex = -1;
 
-    // Find the admitted patient with the earliest admission datetime
+    // Find earliest admitted patient
     for (int i = 0; i < qSize; ++i) {
-        int idx = (front + i) % MAX_SIZE;
-        PatientAdmission &p = patients[idx];
+        PatientAdmission &p = patients[front + i];
         if (p.getStatus() == "Admitted") {
             if (targetIndex == -1) {
-                targetIndex = idx;
+                targetIndex = front + i;
             } else {
-                // Compare date & time
-                std::string currentDT = p.getDate() + " " + p.getTime();
-                std::string targetDT = patients[targetIndex].getDate() + " " + patients[targetIndex].getTime();
+                string currentDT = p.getDate() + " " + p.getTime();
+                string targetDT = patients[targetIndex].getDate() + " " +
+                                  patients[targetIndex].getTime();
                 if (currentDT < targetDT) {
-                    targetIndex = idx;
+                    targetIndex = front + i;
                 }
             }
         }
     }
 
     if (targetIndex == -1) {
-        std::cout << "\nNo admitted patients to discharge.\n";
+        cout << "\nNo admitted patients to discharge.\n";
         return PatientAdmission();
     }
 
     PatientAdmission discharged = patients[targetIndex];
 
-    // Shift remaining patients to remove the discharged one
-    int i = targetIndex;
-    while (i != rear) {
-        int next = (i + 1) % MAX_SIZE;
-        patients[i] = patients[next];
-        i = next;
+    for (int i = targetIndex; i < rear - 1; i++) {
+        patients[i] = patients[i + 1];
     }
 
-    rear = (rear - 1 + MAX_SIZE) % MAX_SIZE;
+    rear--; 
 
     return discharged;
 }
@@ -81,10 +76,8 @@ void Queue::viewQueue() const {
     }
 
     cout << "\n===== Patient Queue =====\n";
-    int qSize = size();
-    for (int i = 0; i < qSize; ++i) {
-        int idx = (front + i) % MAX_SIZE;
-        const PatientAdmission &p = patients[idx];
+    for (int i = front; i < rear; ++i) {
+        const PatientAdmission &p = patients[i];
         cout << p.getId() << ". " << p.getName()
              << " | Condition: " << p.getCondition()
              << " | Status: " << p.getStatus()

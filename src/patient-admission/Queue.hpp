@@ -2,13 +2,13 @@
 #define QUEUE_HPP
 
 #include <iostream>
-#include "PatientAdmission.hpp"  // Include the new class
+#include "PatientAdmission.hpp"
 using namespace std;
 
 class Queue {
 private:
     static const int MAX_SIZE = 100;
-    PatientAdmission patients[MAX_SIZE];  // Use PatientAdmission instead of struct
+    PatientAdmission patients[MAX_SIZE];
     int front;
     int rear;
 
